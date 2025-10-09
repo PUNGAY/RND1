@@ -1,0 +1,6 @@
+code/
+__pycache__/
+*.py[cod]status
+*$py.class
+.DS_Store
+**/.DS_Store

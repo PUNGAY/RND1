@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rnd"
+version = "0.1.0"
+dependencies = [
+    "accelerate",
+    "torch>=2.8",
+    "transformers",
+    "rich"
+]
+
+[project.optional-dependencies]
+flashinfer = [
+    "flashinfer-python",
+]
+sglang = ["sglang[all]"]
+
+[tool.setuptools]
+packages = ["rnd"]
