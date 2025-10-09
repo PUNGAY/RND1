@@ -15,7 +15,7 @@ For more details, see:
 
 **Blog:** https://www.radicalnumerics.ai/blog/rnd1
 
-**Report:** https://www.radicalnumerics.ai/blog/rnd1-report
+**Report:** https://www.radicalnumerics.ai/rnd1-report
 
 **🤗:** https://huggingface.co/radicalnumerics/RND1-Base-0910 
 
