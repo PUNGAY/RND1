@@ -81,7 +81,7 @@ def demo_completion(
     print(f"Loading model from {load_path}...")
 
     # Load config and set RND1-specific settings
-    cfg = RND1Config.from_pretrained(model_path)
+    cfg = RND1Config.from_pretrained(load_path)
     cfg.model_type = "rnd1"
     cfg.attn_implementation = "sdpa"
     cfg.moe_backend = moe_backend
