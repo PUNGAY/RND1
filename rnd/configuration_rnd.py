@@ -75,9 +75,11 @@ class RND1Config(PretrainedConfig):
         # Force non-causal and no caching for RND1
         kwargs["use_cache"] = False
         kwargs["is_causal"] = False
-        self.set_config_defaults()
 
         super().__init__(**kwargs)
+
+        # Set defaults after pretrained init to prevent overrides
+        self.set_config_defaults()
 
         # QoL: set attn impl directly from config
         if "attn_implementation" in kwargs:
