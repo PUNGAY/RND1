@@ -81,17 +81,24 @@ python demo_rnd_generation.py --top_k 50 --prompt "Explain how neural networks l
 from transformers import AutoModelForMaskedLM, AutoTokenizer
 
 # Load model
-model = AutoModelForMaskedLM.from_pretrained("radicalnumerics/RND1-Base", trust_remote_code=True, torch_dtype=torch.bfloat16)
-tokenizer = AutoTokenizer.from_pretrained("radicalnumerics/RND1-Base")
+model = AutoModelForMaskedLM.from_pretrained(
+    "radicalnumerics/RND1-Base-0910",
+    trust_remote_code=True,
+    dtype="bfloat16",
+    device_map="auto"
+)
+tokenizer = AutoTokenizer.from_pretrained("radicalnumerics/RND1-Base-0910")
 
-# Generate
-inputs = tokenizer("Your prompt", return_tensors="pt")
+# Generate - Task mode (for instructions and questions)
+prompt = "Write a Python function that finds the longest common subsequence."
+inputs = tokenizer(f"Question: {prompt}", return_tensors="pt").to(model.device)
 output = model.generate(
     inputs=inputs.input_ids,
     max_new_tokens=256,
     num_diffusion_steps=256,
 )
 text = tokenizer.decode(output[0], skip_special_tokens=True)
+print(text)
 ```
 
 ## Project Structure
