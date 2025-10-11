@@ -118,7 +118,7 @@ def diffusion_sample(
         else:
             suf_len = 0
 
-        reserved = (1 if bos_token_id is not None else 0) + (1 if eos_token_id is not None else 0)
+        reserved = (1 if eos_token_id is not None else 0)
         used = pre_len + suf_len + reserved
 
         if used > seq_len:
@@ -138,8 +138,8 @@ def diffusion_sample(
 
         x = torch.full((1, seq_len), pad_token_id, dtype=torch.long, device=device)
         pos = 0
-        if bos_token_id is not None:
-            x[0, pos] = bos_token_id; pos += 1
+        # if bos_token_id is not None:
+        #     x[0, pos] = bos_token_id; pos += 1
         if pre_len > 0:
             x[0, pos:pos+pre_len] = prefix_ids.flatten()[:pre_len]; pos += pre_len
         fill_start, fill_end = pos, pos + infill_length
