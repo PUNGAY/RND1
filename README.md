@@ -78,25 +78,46 @@ python demo_rnd_generation.py --top_k 50 --prompt "Explain how neural networks l
 ## Python API
 
 ```python
-from transformers import AutoModelForMaskedLM, AutoTokenizer
+from transformers import AutoTokenizer
+from rnd import RND1Config, RND1LM, RND1GenerationConfig
+
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained("radicalnumerics/RND1-Base-0910", trust_remote_code=True)
+
+# Load config and set RND1-specific settings
+cfg = RND1Config.from_pretrained("radicalnumerics/RND1-Base-0910")
+cfg.moe_backend = "hf" # for faster inference, use flashinfer or sglang
 
 # Load model
-model = AutoModelForMaskedLM.from_pretrained(
+model = RND1LM.from_pretrained(
     "radicalnumerics/RND1-Base-0910",
-    trust_remote_code=True,
+    config=cfg,
     dtype="bfloat16",
-    device_map="auto"
+    device_map="auto",
+    trust_remote_code=True,
 )
-tokenizer = AutoTokenizer.from_pretrained("radicalnumerics/RND1-Base-0910")
 
 # Generate - Task mode (for instructions and questions)
 prompt = "Write a Python function that finds the longest common subsequence."
-inputs = tokenizer(f"Question: {prompt}", return_tensors="pt").to(model.device)
-output = model.generate(
-    inputs=inputs.input_ids,
+inputs = tokenizer(f"Question: {prompt}\n Answer:", return_tensors="pt")
+input_ids = inputs.input_ids.to(model.device)
+
+# Create generation config
+gen_config = RND1GenerationConfig(
     max_new_tokens=256,
     num_diffusion_steps=256,
+    eos_token_id=tokenizer.eos_token_id,
+    pad_token_id=tokenizer.pad_token_id,
+    bos_token_id=tokenizer.bos_token_id,
 )
+
+# Generate
+output = model.generate(
+    inputs=input_ids,
+    generation_config=gen_config,
+)
+
+# Decode only the generated part
 text = tokenizer.decode(output[0], skip_special_tokens=True)
 print(text)
 ```
