@@ -110,9 +110,6 @@ def demo_completion(
 
     greedy = (temperature == 0.0)
 
-    generator = torch.Generator(device=device if device != "auto" else "cuda")
-    generator.manual_seed(seed)
-
     for i, user_prompt in enumerate(prompts):
         print(f"\n{'='*60}")
         print(f"Mode: {mode.upper()}")
@@ -131,7 +128,6 @@ def demo_completion(
         
         inputs = tokenizer(prompt, return_tensors="pt")
         input_ids = inputs.input_ids.to(device if device != "auto" else "cuda")
-        attention_mask = inputs.attention_mask.to(device if device != "auto" else "cuda") if 'attention_mask' in inputs else None
         
         print("Generation parameters:")
         print(f"  Prompt length: {input_ids.shape[1]} tokens")
@@ -168,14 +164,12 @@ def demo_completion(
                     tokenizer=tokenizer,
                     inputs=input_ids,
                     generation_config=gen_config,
-                    generator=generator,
                 )
             else:
                 # Use standard generate method with explicit config
                 output = model.generate(
                     inputs=input_ids,
                     generation_config=gen_config,
-                    generator=generator,
                 )
         
         generated_tokens = output[0][len(input_ids[0]):]
@@ -326,7 +320,7 @@ def main():
     print(f"  Random seed: {args.seed}")
     print(f"  Diffusion steps: {args.num_steps}")
     print(f"  Max new tokens: {args.max_new_tokens}")
-    print(f"  Algorithm: Entropy-based selection")
+    print("  Algorithm: Entropy-based selection")
     print(f"  Temperature: {args.temperature}")
     if args.top_k:
         print(f"  Top-k: {args.top_k}")

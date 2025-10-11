@@ -13,8 +13,7 @@ with optional prefix/suffix constraints and infilling.
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 
 def apply_top_k_filtering(logits: torch.Tensor, k: int) -> torch.Tensor:
@@ -60,8 +59,7 @@ def diffusion_sample(
     pad_token_id: Optional[int] = None,
     bos_token_id: Optional[int] = None,
     device: Optional[Union[str, torch.device]] = None,
-    generator: Optional[torch.Generator] = None,
-    visualizer: Optional['TerminalVisualizer'] = None,
+    visualizer: Optional[object] = None,
 ) -> torch.LongTensor:
     """
     Perform masked diffusion sampling with entropy-based token selection.
@@ -84,8 +82,7 @@ def diffusion_sample(
         pad_token_id: Padding token ID (default: None, uses 0 if needed)
         bos_token_id: Beginning of sequence token ID (default: None)
         device: Device for computation (None = infer from model)
-        generator: Optional torch generator for reproducible sampling
-        visualizer: Optional TerminalVisualizer for live visualization
+        visualizer: Optional visualizer for live visualization
 
     Returns:
         Generated token IDs as LongTensor
@@ -96,7 +93,6 @@ def diffusion_sample(
         device = next(model.parameters()).device
     else:
         device = torch.device(device)
-    dtype = next(model.parameters()).dtype
 
     if pad_token_id is None:
         pad_token_id = 0
@@ -141,12 +137,14 @@ def diffusion_sample(
         # if bos_token_id is not None:
         #     x[0, pos] = bos_token_id; pos += 1
         if pre_len > 0:
-            x[0, pos:pos+pre_len] = prefix_ids.flatten()[:pre_len]; pos += pre_len
+            x[0, pos:pos+pre_len] = prefix_ids.flatten()[:pre_len]
+            pos += pre_len
         fill_start, fill_end = pos, pos + infill_length
         x[0, fill_start:fill_end] = mask_token_id
         pos = fill_end
         if suf_len > 0:
-            x[0, pos:pos+suf_len] = suffix_ids.flatten()[:suf_len]; pos += suf_len
+            x[0, pos:pos+suf_len] = suffix_ids.flatten()[:suf_len]
+            pos += suf_len
 
         init_maskable = torch.zeros_like(x, dtype=torch.bool)
         init_maskable[0, fill_start:fill_end] = True
@@ -199,7 +197,7 @@ def diffusion_sample(
         if greedy:
             pred_next = logp.argmax(-1)
         else:
-            pred_next = torch.distributions.Categorical(logits=logp).sample(generator=generator)
+            pred_next = torch.distributions.Categorical(logits=logp).sample()
 
         conf_next = torch.gather(logp, -1, pred_next.unsqueeze(-1)).squeeze(-1)
 
