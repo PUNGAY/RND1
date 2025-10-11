@@ -57,7 +57,7 @@ class RND1Config(PretrainedConfig):
     specific to the RND1 (Radical Numerics Diffusion v1) architecture.
 
     Args:
-        moe_backend: Backend for MoE computation ("hf", "flashinfer", or "sglang")
+        moe_backend: Backend for MoE computation ("hf", "flashinfer", "sglang" or "vllm")
         num_diffusion_steps: Default number of diffusion steps for generation
         mask_token_id: Token ID used for masking (default: 151669 for Qwen)
         **kwargs: Additional arguments passed to Qwen3MoeConfig

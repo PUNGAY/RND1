@@ -43,6 +43,7 @@ pip install torch transformers accelerate numpy rich
 # flashinfer and sglang enable faster inference through optimized MoE kernels:
 pip install flashinfer-python
 pip install sglang[all]
+pip install vllm
 ```
 
 ## Quick Start
