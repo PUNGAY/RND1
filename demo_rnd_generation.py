@@ -37,7 +37,7 @@ def demo_completion(
     top_k: int = None,
     top_p: float = None,
     mask_token_id: int = 151669,
-    seed: int = 12345,
+    seed: int = None,
     moe_backend: str = "hf",
     mode: str = "task",
 ):
@@ -61,6 +61,11 @@ def demo_completion(
         moe_backend: MoE backend to use ('hf', 'vllm', 'sglang', 'flashinfer')
         mode: Generation mode ('task' for Q&A format, 'completion' for continuation)
     """
+    # if seed is not None:
+    if seed is None:
+        # generate a random seed
+        seed = random.randint(0, 1000000)
+        print(f"Seed not provided, using random seed: {seed}")
     set_seed(seed)
 
     from rnd.configuration_rnd import RND1Config
@@ -284,7 +289,7 @@ def main():
     other_group.add_argument(
         "--seed", 
         type=int, 
-        default=12345,
+        default=None,
         help="Random seed for reproducibility"
     )
 
