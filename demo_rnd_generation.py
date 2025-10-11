@@ -108,7 +108,7 @@ def demo_completion(
         else:
             prompts = ["The key to understanding quantum computing lies in"]
 
-    greedy = (temperature == 1.0)
+    greedy = (temperature == 0.0)
 
     generator = torch.Generator(device=device if device != "auto" else "cuda")
     generator.manual_seed(seed)
@@ -152,7 +152,7 @@ def demo_completion(
             max_new_tokens=max_new_tokens,
             num_diffusion_steps=num_steps,
             mask_token_id=mask_token_id,
-            temperature=temperature if not greedy else 1.0,
+            temperature=temperature if not greedy else 0.0,
             top_k=top_k,
             top_p=top_p,
             greedy=greedy,
@@ -261,8 +261,8 @@ def main():
     sampling_group.add_argument(
         "--temperature",
         type=float,
-        default=1.0,
-        help="Temperature for sampling (1.0 = greedy/deterministic)"
+        default=0.1,
+        help="Temperature for sampling (0.0 = greedy/deterministic)"
     )
     sampling_group.add_argument(
         "--top_k", 
