@@ -17,7 +17,6 @@ from transformers.configuration_utils import PretrainedConfig
 CONFIG_DEFAULTS = {
     "attention_bias": False,
     "attention_dropout": 0.0,
-    "bos_token_id": 151643,
     "decoder_sparse_step": 1,
     "eos_token_id": 151645,
     "head_dim": 128,
