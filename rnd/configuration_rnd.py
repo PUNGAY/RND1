@@ -35,6 +35,7 @@ CONFIG_DEFAULTS = {
     "num_hidden_layers": 48,
     "num_key_value_heads": 4,
     "output_router_logits": False,
+    "pad_token_id": 151643,
     "rms_norm_eps": 1e-06,
     "rope_scaling": False,
     "rope_theta": 1000000.0,
