@@ -58,7 +58,7 @@ def demo_completion(
         top_p: Top-p (nucleus) filtering for sampling (None = disabled)
         mask_token_id: Token ID for mask token
         seed: Random seed for reproducibility
-        moe_backend: MoE backend to use ('hf', 'flashinfer', 'sglang', 'vllm')
+        moe_backend: MoE backend to use ('hf', 'vllm', 'sglang', 'flashinfer')
         mode: Generation mode ('task' for Q&A format, 'completion' for continuation)
     """
     set_seed(seed)
@@ -73,7 +73,7 @@ def demo_completion(
     print(f"Using dtype: {dtype}")
 
     if moe_backend == "hf":
-        print("\n⚠️  Note: HuggingFace backend is slower. Consider using --moe_backend flashinfer, sglang or vllm for better performance.\n")
+        print("\n⚠️  Note: HuggingFace backend is slower. Consider using --moe_backend vllm, sglang or flashinfer for better performance.\n")
 
     # Load from checkpoint if provided, otherwise from model_path
     load_path = checkpoint_path if checkpoint_path else model_path
@@ -299,7 +299,7 @@ def main():
         "--moe_backend",
         type=str,
         default="hf",
-        choices=["hf", "flashinfer", "sglang", "vllm"],
+        choices=["hf", "vllm", "sglang", "flashinfer"],
         help="MoE backend to use for sparse mixture of experts layers"
     )
     
