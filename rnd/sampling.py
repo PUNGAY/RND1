@@ -140,10 +140,13 @@ def diffusion_sample(
         pos = 0
         # if bos_token_id is not None:
         #     x[0, pos] = bos_token_id; pos += 1
+        if eos_token_id is not None:
+            x[0, -1] = eos_token_id
         if pre_len > 0:
             x[0, pos:pos+pre_len] = prefix_ids.flatten()[:pre_len]; pos += pre_len
         fill_start, fill_end = pos, pos + infill_length
         x[0, fill_start:fill_end] = mask_token_id
+        # print(fill_start, fill_end, seq_len, used, x[0, -1])
         pos = fill_end
         if suf_len > 0:
             x[0, pos:pos+suf_len] = suffix_ids.flatten()[:suf_len]; pos += suf_len
