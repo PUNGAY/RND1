@@ -260,7 +260,7 @@ def main():
     sampling_group.add_argument(
         "--temperature",
         type=float,
-        default=0.1,
+        default=0.01,
         help="Temperature for sampling (0.0 = greedy/deterministic)"
     )
     sampling_group.add_argument(
@@ -289,7 +289,7 @@ def main():
     other_group.add_argument(
         "--seed", 
         type=int, 
-        default=None,
+        default=1234,
         help="Random seed for reproducibility"
     )
 
