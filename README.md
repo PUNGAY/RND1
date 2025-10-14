@@ -43,6 +43,7 @@ pip install torch transformers accelerate numpy rich
 # flashinfer and sglang enable faster inference through optimized MoE kernels:
 pip install flashinfer-python
 pip install sglang[all]
+pip install vllm
 ```
 
 ## Quick Start
@@ -72,7 +73,7 @@ python demo_rnd_generation.py --top_k 50 --prompt "Explain how neural networks l
 - `--temperature`: Sampling temperature, 0.0 for greedy (default: 0.0)
 - `--top_k`: Top-k filtering - keeps only k most likely tokens (works with greedy and sampling)
 - `--top_p`: Nucleus filtering - keeps tokens with cumulative probability ≤ p (works with greedy and sampling)
-- `--moe_backend`: Choose backend: hf, flashinfer, sglang (default: hf)
+- `--moe_backend`: Choose backend: hf, vllm, sglang, flashinfer (default: hf)
 - `--no_viz`: Disable visualization
 
 ## Python API
@@ -86,7 +87,7 @@ tokenizer = AutoTokenizer.from_pretrained("radicalnumerics/RND1-Base-0910", trus
 
 # Load config and set RND1-specific settings
 cfg = RND1Config.from_pretrained("radicalnumerics/RND1-Base-0910")
-cfg.moe_backend = "hf" # for faster inference, use flashinfer or sglang
+cfg.moe_backend = "hf" # for faster inference, use vllm, sglang or flashinfer
 
 # Load model
 model = RND1LM.from_pretrained(

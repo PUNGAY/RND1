@@ -37,7 +37,7 @@ def demo_completion(
     top_k: int = None,
     top_p: float = None,
     mask_token_id: int = 151669,
-    seed: int = 12345,
+    seed: int = None,
     moe_backend: str = "hf",
     mode: str = "task",
 ):
@@ -58,9 +58,14 @@ def demo_completion(
         top_p: Top-p (nucleus) filtering for sampling (None = disabled)
         mask_token_id: Token ID for mask token
         seed: Random seed for reproducibility
-        moe_backend: MoE backend to use ('hf' or 'flashinfer')
+        moe_backend: MoE backend to use ('hf', 'vllm', 'sglang', 'flashinfer')
         mode: Generation mode ('task' for Q&A format, 'completion' for continuation)
     """
+    # if seed is not None:
+    if seed is None:
+        # generate a random seed
+        seed = random.randint(0, 1000000)
+        print(f"Seed not provided, using random seed: {seed}")
     set_seed(seed)
 
     from rnd.configuration_rnd import RND1Config
@@ -73,7 +78,7 @@ def demo_completion(
     print(f"Using dtype: {dtype}")
 
     if moe_backend == "hf":
-        print("\n⚠️  Note: HuggingFace backend is slower. Consider using --moe_backend flashinfer or sglang for better performance.\n")
+        print("\n⚠️  Note: HuggingFace backend is slower. Consider using --moe_backend vllm, sglang or flashinfer for better performance.\n")
 
     # Load from checkpoint if provided, otherwise from model_path
     load_path = checkpoint_path if checkpoint_path else model_path
@@ -108,10 +113,7 @@ def demo_completion(
         else:
             prompts = ["The key to understanding quantum computing lies in"]
 
-    greedy = (temperature == 1.0)
-
-    generator = torch.Generator(device=device if device != "auto" else "cuda")
-    generator.manual_seed(seed)
+    greedy = (temperature == 0.0)
 
     for i, user_prompt in enumerate(prompts):
         print(f"\n{'='*60}")
@@ -131,7 +133,6 @@ def demo_completion(
         
         inputs = tokenizer(prompt, return_tensors="pt")
         input_ids = inputs.input_ids.to(device if device != "auto" else "cuda")
-        attention_mask = inputs.attention_mask.to(device if device != "auto" else "cuda") if 'attention_mask' in inputs else None
         
         print("Generation parameters:")
         print(f"  Prompt length: {input_ids.shape[1]} tokens")
@@ -152,7 +153,7 @@ def demo_completion(
             max_new_tokens=max_new_tokens,
             num_diffusion_steps=num_steps,
             mask_token_id=mask_token_id,
-            temperature=temperature if not greedy else 1.0,
+            temperature=temperature if not greedy else 0.0,
             top_k=top_k,
             top_p=top_p,
             greedy=greedy,
@@ -168,14 +169,12 @@ def demo_completion(
                     tokenizer=tokenizer,
                     inputs=input_ids,
                     generation_config=gen_config,
-                    generator=generator,
                 )
             else:
                 # Use standard generate method with explicit config
                 output = model.generate(
                     inputs=input_ids,
                     generation_config=gen_config,
-                    generator=generator,
                 )
         
         generated_tokens = output[0][len(input_ids[0]):]
@@ -261,8 +260,8 @@ def main():
     sampling_group.add_argument(
         "--temperature",
         type=float,
-        default=1.0,
-        help="Temperature for sampling (1.0 = greedy/deterministic)"
+        default=0.1,
+        help="Temperature for sampling (0.0 = greedy/deterministic)"
     )
     sampling_group.add_argument(
         "--top_k", 
@@ -290,7 +289,7 @@ def main():
     other_group.add_argument(
         "--seed", 
         type=int, 
-        default=12345,
+        default=None,
         help="Random seed for reproducibility"
     )
 
@@ -299,7 +298,7 @@ def main():
         "--moe_backend",
         type=str,
         default="hf",
-        choices=["hf", "flashinfer", "sglang"],
+        choices=["hf", "vllm", "sglang", "flashinfer"],
         help="MoE backend to use for sparse mixture of experts layers"
     )
     
@@ -326,7 +325,7 @@ def main():
     print(f"  Random seed: {args.seed}")
     print(f"  Diffusion steps: {args.num_steps}")
     print(f"  Max new tokens: {args.max_new_tokens}")
-    print(f"  Algorithm: Entropy-based selection")
+    print("  Algorithm: Entropy-based selection")
     print(f"  Temperature: {args.temperature}")
     if args.top_k:
         print(f"  Top-k: {args.top_k}")

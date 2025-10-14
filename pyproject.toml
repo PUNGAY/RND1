@@ -17,6 +17,7 @@ flashinfer = [
     "flashinfer-python",
 ]
 sglang = ["sglang[all]"]
+vllm = ["vllm"]
 
 [tool.setuptools]
 packages = ["rnd"]
