@@ -23,24 +23,15 @@ For more details, see:
  * **RND1-Base-0910**: first base model in the RND1 family. It has not been post-trained for specific usage.
 
 
-<br></br>
-<p align="center">
-  <img src="assets/rn-logo-desktop-vector.svg" alt="Project logo" width="280">
-</p>
-
-------
-
-
-
 ## Installation
 
 ```bash
-# tested with Python3.12
+# tested with Python 3.12
 pip install torch transformers accelerate numpy rich
 ```
 
 ```bash
-# flashinfer and sglang enable faster inference through optimized MoE kernels:
+# backends enable faster inference through optimized MoE kernels:
 pip install flashinfer-python
 pip install sglang[all]
 pip install vllm
@@ -52,16 +43,18 @@ pip install vllm
 
 ```bash
 # Task mode (default) - for instructions, questions, or requests
-python demo_rnd_generation.py --prompt "Write a Python function that finds the longest common subsequence of two strings. Include comments explaining the algorithm."
+python demo_rnd_generation.py --prompt "Write a Python function that finds the longest common subsequence of two strings. Include comments explaining the algorithm." --moe_backend hf
 
 # Completion mode - for text continuation
-python demo_rnd_generation.py --mode completion --prompt "The key to understanding quantum computing lies in"
+python demo_rnd_generation.py --mode completion --prompt "The key to understanding quantum computing lies in" --moe_backend hf
 
 # Sampling parameters
-python demo_rnd_generation.py --top_k 50 --prompt "Explain how neural networks learn in simple terms"
+python demo_rnd_generation.py --top_k 50 --temperature 0.7 --prompt "Explain how neural networks learn in simple terms" --moe_backend hf
 ```
 
-**Warning:** selecting a non-Huggingface backend is highly encouraged for faster generation. When using `flashinfer-python`, JIT compilation the first time the code is run may take a while.
+
+> [!WARNING]
+> Selecting a non-Huggingface MoE backend is highly encouraged for faster generation. Note however that non-HF backends currently support a single GPU only, so you need to set e.g. `export CUDA_VISIBLE_DEVICES=0` before running the script. If you use `flashinfer-python`, JIT compilation the first time the code is run may take a while unless `flashinfer-jit-cache` is installed.
 
 ### Demo Parameters
 
@@ -80,42 +73,31 @@ python demo_rnd_generation.py --top_k 50 --prompt "Explain how neural networks l
 
 ```python
 from transformers import AutoTokenizer
-from rnd import RND1Config, RND1LM, RND1GenerationConfig
+from rnd import RND1LM
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained("radicalnumerics/RND1-Base-0910", trust_remote_code=True)
 
-# Load config and set RND1-specific settings
-cfg = RND1Config.from_pretrained("radicalnumerics/RND1-Base-0910")
-cfg.moe_backend = "hf" # for faster inference, use vllm, sglang or flashinfer
-
 # Load model
 model = RND1LM.from_pretrained(
     "radicalnumerics/RND1-Base-0910",
-    config=cfg,
     dtype="bfloat16",
     device_map="auto",
     trust_remote_code=True,
+    moe_backend="hf", # hf (default), sglang, vllm, flashinfer
 )
 
 # Generate - Task mode (for instructions and questions)
-prompt = "Write a Python function that finds the longest common subsequence."
-inputs = tokenizer(f"Question: {prompt}\n Answer:", return_tensors="pt")
+prompt = "Write a Python function that finds the longest common subsequence of two strings. Include comments explaining the algorithm."
+inputs = tokenizer(f"Question: {prompt}\nAnswer:", return_tensors="pt")
 input_ids = inputs.input_ids.to(model.device)
-
-# Create generation config
-gen_config = RND1GenerationConfig(
-    max_new_tokens=256,
-    num_diffusion_steps=256,
-    eos_token_id=tokenizer.eos_token_id,
-    pad_token_id=tokenizer.pad_token_id,
-    bos_token_id=tokenizer.bos_token_id,
-)
 
 # Generate
 output = model.generate(
     inputs=input_ids,
-    generation_config=gen_config,
+    max_new_tokens=256,
+    num_diffusion_steps=256,
+    temperature=0.01,
 )
 
 # Decode only the generated part
@@ -138,3 +120,10 @@ RND_dev/
     ├── sampling.py              # Diffusion sampling algorithm
     └── terminal_visualizer.py   # Live visualization (optional)
 ```
+
+
+---
+
+<p align="center">
+  <img width=350 alt="Radical Numerics Logo" src="https://raw.githubusercontent.com/RadicalNumerics/assets/refs/heads/main/svg/rn-logo-desktop-vector-animated.svg" />
+</p>
