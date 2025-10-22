@@ -11,12 +11,12 @@ including the main GenerationMixin class that integrates with HuggingFace.
 """
 
 import torch
-import torch.nn as nn
 from typing import Optional, Union, Dict, Any
 from transformers import GenerationMixin as HFGenerationMixin
 from transformers.generation import GenerationConfig
 
-from .sampling import diffusion_sample, apply_top_k_filtering, apply_top_p_filtering
+from .generation_config import RND1GenerationConfig
+from .sampling import diffusion_sample
 
 
 class RND1GenerationMixin(HFGenerationMixin):
@@ -46,12 +46,12 @@ class RND1GenerationMixin(HFGenerationMixin):
 
         Args:
             inputs: Input token IDs to use as prefix (standard HF parameter)
-            generation_config: Generation configuration object
+            generation_config: Generation configuration object. Default is RND1GenerationConfig.
             prefix_ids: Alternative to inputs for infilling tasks
             suffix_ids: Optional suffix for infilling tasks
             infill_length: Length of infill region (for infilling)
             return_dict_in_generate: Whether to return GenerateDecoderOnlyOutput
-            **kwargs: Additional arguments (accepted for compatibility)
+            **kwargs: Additional arguments (accepted for compatibility). These will be passed to the config constructor.
 
         Returns:
             Generated token IDs or GenerateDecoderOnlyOutput
@@ -61,7 +61,7 @@ class RND1GenerationMixin(HFGenerationMixin):
             model_kwargs = kwargs.copy()
         else:
             # Only prepare config from kwargs if no config was provided
-            gen_config, model_kwargs = self._prepare_generation_config(None, **kwargs)
+            gen_config, model_kwargs = self._prepare_generation_config(RND1GenerationConfig(), **kwargs)
 
         device = next(self.parameters()).device
 
@@ -76,7 +76,7 @@ class RND1GenerationMixin(HFGenerationMixin):
             suffix_ids = suffix_ids.to(device)
 
         eos_token_id = gen_config.eos_token_id or getattr(self.config, "eos_token_id", 151645)
-        pad_token_id = gen_config.pad_token_id or getattr(self.config, "pad_token_id", None)
+        pad_token_id = gen_config.pad_token_id or getattr(self.config, "pad_token_id", 151643)
         bos_token_id = gen_config.bos_token_id or getattr(self.config, "bos_token_id", None)
         mask_token_id = getattr(gen_config, "mask_token_id", getattr(self.config, "mask_token_id", 151669))
 
