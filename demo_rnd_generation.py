@@ -124,7 +124,7 @@ def demo_completion(
         if mode == "task":
             # Task mode: Add "Question: " prefix if not already present
             if not user_prompt.strip().startswith("Question:"):
-                prompt = f"Question: {user_prompt}\n"
+                prompt = f"Question: {user_prompt}\nAnswer:"
             else:
                 prompt = user_prompt
         else:
