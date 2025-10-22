@@ -95,7 +95,7 @@ def demo_completion(
     model = RND1LM.from_pretrained(
         load_path,
         config=cfg,
-        torch_dtype=dtype,
+        dtype=dtype,
         device_map="auto" if device == "cuda:0" else device,
         trust_remote_code=True,
         use_safetensors=True,
